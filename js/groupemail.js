@@ -7,6 +7,7 @@ jQuery(document).ready(function() {
         var content = tinyMCE.get('messagecontent').getContent();
         var groupmem = jQuery('input#groupmem').val();
         var nonce = jQuery('input#nonce').val();
+        var attachment = jQuery('input#file_upload').val();
       if (subject == "") {
         jQuery('p#subject_error').attr('style', 'display:block;');
         jQuery('input#subject').focus();
@@ -36,6 +37,7 @@ jQuery(document).ready(function() {
     groupname: groupname,
     groupmem: groupmem,
     self_send: sg_self_send,
+    attachment: attachment,
     nonce: nonce
   };
   jQuery.post(ajax_object.ajax_url, data, function(response) {

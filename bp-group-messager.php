@@ -16,6 +16,7 @@ and: http://net.tutsplus.com/tutorials/javascript-ajax/submit-a-form-without-pag
 http://codex.wordpress.org/AJAX_in_Plugins
 for reference
 */
+include ('cpt-sg-grp-msg.php');
 
 function add_groupemail_sidebar() 
 {
@@ -36,6 +37,21 @@ function add_groupemailscript(){
 }
 add_action( 'init', 'add_groupemailscript' );
 
+function change_upload_dir($upload_dir) {
+
+	//create directory for upload if not exists
+
+if (!file_exists('/grp_message_attachments')) {
+    mkdir('/grp_message_attachments', 0777, true);
+}
+
+
+    $upload_dir['subdir'] = '/grp_message_attachments' . $upload_dir['subdir'];
+    $upload_dir['path']   = $upload_dir['basedir'] . $upload_dir['subdir'];
+    $upload_dir['url']    = $upload_dir['baseurl'] . $upload_dir['subdir'];
+    return $upload_dir;
+}
+
 function send_group_email(){
 	$subject = $_POST ['subject'];
 	$content = stripslashes_deep( $_POST ['content'] );
@@ -46,6 +62,44 @@ function send_group_email(){
 	$nonce = $_POST ['nonce'];
 	$noncecheck = check_ajax_referer( 'bp-group-message', 'nonce' );
 	$groupmem = $_POST ['groupmem'];
+	$attachments = $_POST['file_upload'];
+error_log(var_export($_POST,true)); 
+
+// UPLOAD attachments to custom group_msg_attachment directory
+
+
+	//
+
+    if (is_array($attachments)) {
+        // error_log('if is array?');
+        foreach ($attachments as $attachment) {
+
+            if($_FILES[$attachment]['size'] > 0 ) {
+                // error_log('if not empty?');
+                $file = $_FILES[$attachment];
+
+                add_filter( 'upload_dir', 'change_upload_dir' );
+                $upload = wp_handle_upload( $file, array('test_form' => false) );
+                remove_filter( 'upload_dir', 'change_upload_dir' );
+
+                if(!isset($upload['error']) && isset($upload['file'])) {
+
+                    $upload = array_merge($upload, array('filesize'=>$file[size]));
+
+                    $upload = array_merge($upload, array('name'=>$file[name]));
+
+
+
+
+                }
+            }         
+
+        }
+    }
+
+
+
+// end upload attachment code
 
 //set up the message to send
 global $wpdb;
@@ -120,7 +174,28 @@ $user_name = $user_object->display_name;
 $mail_headers[] = 'From:'.$user_name.'<'.$user_email.'>'."\r\n";
 $mail_headers[] = 'Cc:'.implode( ",", $sg_all_group_emails );
 
-wp_mail($to_field, $subject, $content, $mail_headers);
+wp_mail($to_field, $subject, $content, $mail_headers, $attachments);
+
+
+//INSERT CPT into database to allow sent emails to be reviewed
+
+$post_args = array(
+	'post_title'	=> $subject,
+	'post_content'	=> $content,
+	'post_author'	=> $user,
+	'post_type'		=> 'sg_grp_msg',
+	'post_status'	=> 'publish',
+	);
+
+
+$grp_msg_id = wp_insert_post($post_args, true);
+
+//THEN UPDATE POST META with other info
+$g_id_update = update_post_meta($grp_msg_id, 'group_id', $sg_group_id);
+$g_name_update = update_post_meta($grp_msg_id, 'group_name', $sg_groupname);
+$mem_sent_update = update_post_meta($grp_msg_id, 'sent_by_member', $groupmem);
+$self_sent_update = update_post_meta($grp_msg_id, 'sent_to_self', $self_send);
+
 
 // $msg_args = 	array (
 // 		'sender_id' => $user,
