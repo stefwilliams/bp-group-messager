@@ -38,7 +38,7 @@ add_action( 'init', 'add_groupemailscript' );
 
 function send_group_email(){
 	$subject = $_POST ['subject'];
-	$content = $_POST ['content'];
+	$content = stripslashes_deep( $_POST ['content'] );
 	$user = $_POST ['user'];
 	$sg_group_id = $_POST ['group'];
 	$sg_groupname = $_POST ['groupname'];
@@ -118,7 +118,7 @@ $user_name = $user_object->display_name;
 
 // create mail headers
 $mail_headers[] = 'From:'.$user_name.'<'.$user_email.'>'."\r\n";
-$mail_headers[] = 'Bcc:'.implode( ",", $sg_all_group_emails );
+$mail_headers[] = 'Cc:'.implode( ",", $sg_all_group_emails );
 
 wp_mail($to_field, $subject, $content, $mail_headers);
 
