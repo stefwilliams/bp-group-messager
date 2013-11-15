@@ -17,7 +17,7 @@ http://codex.wordpress.org/AJAX_in_Plugins
 for reference
 */
 include ('cpt-sg-grp-msg.php');
-
+// include ('ajax_upload.php');
 function add_groupemail_sidebar() 
 {
 	global $bp;
@@ -29,28 +29,26 @@ function add_groupemail_sidebar()
 }
 add_action( 'get_sidebar', 'add_groupemail_sidebar' );
 
-function add_groupemailscript(){
+function add_groupemailscripts(){
 	$pluginsurl = plugins_url ('bp-group-messager');
     wp_enqueue_script( 'groupemail', $pluginsurl.'/js/groupemail.js', array( 'jquery' ) );
     wp_localize_script( 'groupemail', 'ajax_object',
             array( 'ajax_url' => admin_url( 'admin-ajax.php' )) );
+    //ajax upload scripts
+    wp_register_style( 'googlefonts', 'http://fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700');
+    wp_enqueue_style('googlefonts');
+    wp_register_style( 'file_upload_css', $pluginsurl.'/css/file_upload.css');
+    wp_enqueue_style('file_upload_css');
+    wp_enqueue_script( 'jquery_knob', $pluginsurl.'/js/jquery.knob.js', array( 'jquery' ), '1.2.0', true );
+    wp_enqueue_script( 'jquery_iframe', $pluginsurl.'/js/jquery.iframe-transport.js', array( 'jquery' ), '1.6.1', true );
+    wp_enqueue_script( 'jquery_upload', $pluginsurl.'/js/jquery.fileupload.js', array( 'jquery' ), '5.26', true );
+    wp_enqueue_script( 'jquery_attachment', $pluginsurl.'/js/attachment.js', array( 'jquery' ), '0.1', true );
+        wp_localize_script( 'jquery_attachment', 'ajax_upload',
+            array( 'ajax_url' => admin_url( 'admin-ajax.php' )) );
 }
-add_action( 'init', 'add_groupemailscript' );
-
-function change_upload_dir($upload_dir) {
-
-	//create directory for upload if not exists
-
-if (!file_exists('/grp_message_attachments')) {
-    mkdir('/grp_message_attachments', 0777, true);
-}
+add_action( 'init', 'add_groupemailscripts' );
 
 
-    $upload_dir['subdir'] = '/grp_message_attachments' . $upload_dir['subdir'];
-    $upload_dir['path']   = $upload_dir['basedir'] . $upload_dir['subdir'];
-    $upload_dir['url']    = $upload_dir['baseurl'] . $upload_dir['subdir'];
-    return $upload_dir;
-}
 
 function send_group_email(){
 	$subject = $_POST ['subject'];
@@ -70,32 +68,7 @@ error_log(var_export($_POST,true));
 
 	//
 
-    if (is_array($attachments)) {
-        // error_log('if is array?');
-        foreach ($attachments as $attachment) {
 
-            if($_FILES[$attachment]['size'] > 0 ) {
-                // error_log('if not empty?');
-                $file = $_FILES[$attachment];
-
-                add_filter( 'upload_dir', 'change_upload_dir' );
-                $upload = wp_handle_upload( $file, array('test_form' => false) );
-                remove_filter( 'upload_dir', 'change_upload_dir' );
-
-                if(!isset($upload['error']) && isset($upload['file'])) {
-
-                    $upload = array_merge($upload, array('filesize'=>$file[size]));
-
-                    $upload = array_merge($upload, array('name'=>$file[name]));
-
-
-
-
-                }
-            }         
-
-        }
-    }
 
 
 

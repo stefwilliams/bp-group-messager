@@ -52,9 +52,21 @@ if ($groupmember == 1) {
       );
     wp_editor('', 'messagecontent', $editor_settings); ?>
     <br />
-    <label for="attachment" id="attachment">Add an attachment</label>
-    <input type="hidden" name="file_upload[]" value="file_upload" />
-    <input type="file" name="file_upload" id="file_upload" />
+
+        <div id="upload" data-action="<? echo plugins_url ('bp-group-messager').'/ajax_upload.php' ?>">
+            <div id="drop">
+                Drop Here
+
+                <a>Browse</a>
+                <input type="file" name="upl" multiple />
+            </div>
+
+            <ul>
+                <!-- The file uploads will be shown here -->
+            </ul>
+
+        </div>
+
     <hr />
     <label class="checkbox">Send a copy to yourself<input type="checkbox" name="self_send" value="send" id="self_send"/></label>
     <button type="submit" class="btn btn-inverse btn-block" id="sendgroupmail">Send Email</button>
