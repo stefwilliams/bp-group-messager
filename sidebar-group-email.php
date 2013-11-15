@@ -33,7 +33,9 @@ if ($groupmember == 1) {
   <form id="sg-group-messsage" action="" method="post">
       <legend>Contact <?php echo $sg_group->name; ?></legend>
     <fieldset id="fieldset">
+<?php $ts = time();?>
     <input type="hidden" name="nonce" id="nonce" value="<?php echo $ajax_nonce; ?>">  
+    <input type="hidden" name="tempdir" id="tempdir" value="<?php echo wp_create_nonce($ts);?>">
     <input type="hidden" name="groupmem" id="groupmem" value="<?php echo $groupmem; ?>">  
     <input type="hidden" name="userid" id="userid" value="<?php echo $sg_user; ?>"> 
     <input type="hidden" name="groupname" id="groupname" value="<?php echo $sg_group->name; ?>">
@@ -52,7 +54,6 @@ if ($groupmember == 1) {
       );
     wp_editor('', 'messagecontent', $editor_settings); ?>
     <br />
-
         <div id="upload" data-action="<? echo plugins_url ('bp-group-messager').'/ajax_upload.php' ?>">
             <div id="drop">
                 Drop Here

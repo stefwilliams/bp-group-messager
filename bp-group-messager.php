@@ -60,7 +60,7 @@ function send_group_email(){
 	$nonce = $_POST ['nonce'];
 	$noncecheck = check_ajax_referer( 'bp-group-message', 'nonce' );
 	$groupmem = $_POST ['groupmem'];
-	$attachments = $_POST['file_upload'];
+	$attachments = $_POST['attachment'];
 error_log(var_export($_POST,true)); 
 
 // UPLOAD attachments to custom group_msg_attachment directory

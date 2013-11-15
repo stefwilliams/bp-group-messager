@@ -18,23 +18,23 @@ jQuery(function(){
         // This element will accept file drag/drop uploading
         dropZone: jQuery('#drop'),
         // the path to the upload handler file
-        url: jQuery('#upload').data('action'),
-
+        url: jQuery('#upload').data('action'),       
 
 
         // This function is called when a file is added to the queue;
         // either via the browse button, or via drag/drop:
         add: function (e, data) {
 
-data.action = "ajax_upload",
-console.log(data);
+            // data.tempdir = jQuery('#upload').data('temp');
 
-            var tpl = jQuery('<li class="working"><input type="text" value="0" data-width="48" data-height="48"'+
-                ' data-fgColor="#0788a5" data-readOnly="1" data-bgColor="#3e4043" /><p></p><span></span></li>');
+            var tpl = jQuery('<li class="working"><input class="attachment" data-filename="empty" type="text" value="0" data-width="48" data-height="48"'+
+                ' data-fgColor="#0788a5" data-readOnly="1" data-bgColor="#3e4043" name="attachment[]" /><p></p><span></span></li>');
 
             // Append the file name and file size
             tpl.find('p').text(data.files[0].name)
                          .append('<i>' + formatFileSize(data.files[0].size) + '</i>');
+
+                         tpl.find('input.attachment').attr('data-filename', data.files[0].name);
 
             // Add the HTML to the UL element
             data.context = tpl.appendTo(ul);
@@ -57,6 +57,9 @@ console.log(data);
 
             // Automatically upload the file once it is added to the queue
             var jqXHR = data.submit();
+            // var response = jqXHR.responseText;
+            console.log(data);
+            // console.log(response);
         },
 
         progress: function(e, data){

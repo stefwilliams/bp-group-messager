@@ -7,7 +7,8 @@ jQuery(document).ready(function() {
         var content = tinyMCE.get('messagecontent').getContent();
         var groupmem = jQuery('input#groupmem').val();
         var nonce = jQuery('input#nonce').val();
-        var attachment = jQuery('input#file_upload').val();
+        // var attachment = jQuery('input#attachment').val();
+        var attachment = jQuery("input.attachment").map(function(){return jQuery(this).attr('data-filename');}).get();
       if (subject == "") {
         jQuery('p#subject_error').attr('style', 'display:block;');
         jQuery('input#subject').focus();
