@@ -50,7 +50,7 @@ add_action( 'init', 'add_groupemailscripts' );
 
 
 
-function send_group_email(){
+function send_group_email($upload_dir){
 	$subject = $_POST ['subject'];
 	$content = stripslashes_deep( $_POST ['content'] );
 	$user = $_POST ['user'];
@@ -60,12 +60,41 @@ function send_group_email(){
 	$nonce = $_POST ['nonce'];
 	$noncecheck = check_ajax_referer( 'bp-group-message', 'nonce' );
 	$groupmem = $_POST ['groupmem'];
+	$tempdir = $_POST ['tempdir'];
 	$attachments = $_POST['attachment'];
-error_log(var_export($_POST,true)); 
+	$ts = time();
+	// error_log(var_export($_POST,true)); 
+	$upload_dir = wp_upload_dir();
+	$upload_dir = $upload_dir['basedir'];
+	// error_log(var_export($upload_dir, true));
+		$temp_path = $upload_dir.'/grp_message_temp/'.$tempdir;
+		$end_path = $upload_dir.'/grp_message_attachments/'.$user.'-'.$ts;
 
-// UPLOAD attachments to custom group_msg_attachment directory
+		
+// move attachments from tempdir to group_msg_attachment directory and delete temp directory
 
+if ($attachments) {
+	$attachments_tosend = array();
+    	mkdir($end_path, 0777, true);
+	foreach ($attachments as $attachment) {	
+		
+		rename($temp_path.'/'.$attachment, $end_path.'/'.$attachment);
 
+		//create array with full path to attachement for wp_mail below
+		array_push($attachments_tosend, $end_path.'/'.$attachment);
+
+	}
+//find any orphaned files in temp dir and delete
+$files = glob($upload_dir.'/grp_message_temp/'.$tempdir.'/*'); // get all file names
+if ($files) {
+	foreach ($files as $file) { // iterate files
+	  if(is_file($file))
+	    unlink($file); // delete file
+	}
+}
+// delete temp directory
+rmdir($upload_dir.'/grp_message_temp/'.$tempdir);
+}
 	//
 
 
@@ -147,7 +176,7 @@ $user_name = $user_object->display_name;
 $mail_headers[] = 'From:'.$user_name.'<'.$user_email.'>'."\r\n";
 $mail_headers[] = 'Cc:'.implode( ",", $sg_all_group_emails );
 
-wp_mail($to_field, $subject, $content, $mail_headers, $attachments);
+wp_mail($to_field, $subject, $content, $mail_headers, $attachments_tosend);
 
 
 //INSERT CPT into database to allow sent emails to be reviewed
@@ -168,6 +197,7 @@ $g_id_update = update_post_meta($grp_msg_id, 'group_id', $sg_group_id);
 $g_name_update = update_post_meta($grp_msg_id, 'group_name', $sg_groupname);
 $mem_sent_update = update_post_meta($grp_msg_id, 'sent_by_member', $groupmem);
 $self_sent_update = update_post_meta($grp_msg_id, 'sent_to_self', $self_send);
+$attachments_sent = update_post_meta($grp_msg_id, 'attachments', $attachments_tosend);
 
 
 // $msg_args = 	array (

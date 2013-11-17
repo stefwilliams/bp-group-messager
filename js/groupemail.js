@@ -7,6 +7,7 @@ jQuery(document).ready(function() {
         var content = tinyMCE.get('messagecontent').getContent();
         var groupmem = jQuery('input#groupmem').val();
         var nonce = jQuery('input#nonce').val();
+        var tempdir = jQuery('input#tempdir').val();
         // var attachment = jQuery('input#attachment').val();
         var attachment = jQuery("input.attachment").map(function(){return jQuery(this).attr('data-filename');}).get();
       if (subject == "") {
@@ -38,6 +39,7 @@ jQuery(document).ready(function() {
     groupname: groupname,
     groupmem: groupmem,
     self_send: sg_self_send,
+    tempdir: tempdir,
     attachment: attachment,
     nonce: nonce
   };
