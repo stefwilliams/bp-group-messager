@@ -16,7 +16,7 @@
 
 #drop{
     background-color: #2E3134;
-    padding: 0px 25px;
+    padding: 0px;
     margin-bottom: 15px;
     border: 20px solid rgba(0, 0, 0, 0);
     border-radius: 3px;
@@ -76,7 +76,7 @@
     display: none;
 }
 
-#upload ul li p{
+#upload ul li p.filename{
     width: 100px;
     text-overflow:ellipsis;
     overflow: hidden;
@@ -87,6 +87,10 @@
     position: absolute;
     top: 20px;
     left: 100px;
+}
+
+#upload ul li p.error strong {
+    color: #FF4F5D;
 }
 
 #upload ul li i{

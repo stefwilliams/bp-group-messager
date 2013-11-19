@@ -56,7 +56,7 @@ if ($groupmember == 1) {
     <br />
         <div id="upload" data-action="<? echo plugins_url ('bp-group-messager').'/ajax_upload.php' ?>">
             <div id="drop">
-                Drop Here
+                Drop Attachments Here
 
                 <a>Browse</a>
                 <input type="file" name="upl" multiple />

@@ -19,7 +19,7 @@ jQuery(function(){
         dropZone: jQuery('#drop'),
         // the path to the upload handler file
         url: jQuery('#upload').data('action'),       
-
+        dataType: 'json',
 
         // This function is called when a file is added to the queue;
         // either via the browse button, or via drag/drop:
@@ -28,10 +28,10 @@ jQuery(function(){
             // data.tempdir = jQuery('#upload').data('temp');
 
             var tpl = jQuery('<li class="working"><input class="attachment" data-filename="empty" type="text" value="0" data-width="48" data-height="48"'+
-                ' data-fgColor="#0788a5" data-readOnly="1" data-bgColor="#3e4043" name="attachment[]" /><p></p><span></span></li>');
+                ' data-fgColor="#0788a5" data-readOnly="1" data-bgColor="#3e4043" name="attachment[]" /><p class="filename"></p><span></span></li>');
 
             // Append the file name and file size
-            tpl.find('p').text(data.files[0].name)
+            tpl.find('p.filename').text(data.files[0].name)
                          .append('<i>' + formatFileSize(data.files[0].size) + '</i>');
 
                          tpl.find('input.attachment').attr('data-filename', data.files[0].name);
@@ -58,7 +58,8 @@ jQuery(function(){
             // Automatically upload the file once it is added to the queue
             var jqXHR = data.submit();
             // var response = jqXHR.responseText;
-            console.log(data);
+            // console.log(data);
+            console.log(jqXHR);
             // console.log(response);
         },
 
@@ -74,6 +75,19 @@ jQuery(function(){
             if(progress == 100){
                 data.context.removeClass('working');
             }
+        },
+
+        done: function(e, data){
+            var response = data.jqXHR.responseText;
+            // var upload = jQuery()
+            var jresponse = JSON.parse(response);
+            console.log(jresponse);
+            if (jresponse.status=="bad_file") {
+                var target = data.context.find('input.attachment').attr('data-filename', jresponse.filename);
+                target.siblings('canvas').remove();
+                var parentli = target.parent().parent('li');
+                parentli.html('<p class="error"><strong>'+ jresponse.filename +'</strong> This filetype is not allowed.<br /> Allowed filetypes are: <br />' + jresponse.allowed + '</p>');
+            };
         },
 
         fail:function(e, data){

@@ -23,15 +23,21 @@ function change_upload_dir($upload_dir) {
 
 
 // A list of permitted file extensions
-$allowed = array('png', 'jpg', 'gif','zip', 'pdf', 'doc', 'mp3');
+$allowed = array('png', 'jpg', 'jpeg', 'gif','zip', 'pdf', 'doc', 'docx', 'mp3');
+$allowed_string = implode(', ', $allowed);
 
 if(isset($_FILES['upl']) && $_FILES['upl']['error'] == 0){
     $extension = pathinfo($_FILES['upl']['name'], PATHINFO_EXTENSION);
     
     
     if(!in_array(strtolower($extension), $allowed)){
+        error_log(var_export($_FILES, true));
+        $filename = $_FILES['upl']['name'];
     	// error_log("disallowed extension");
-        echo '{"status":"bad_file"}';
+        // header('Content-type: application/json');
+        echo '{"status":"bad_file", "allowed":"'.$allowed_string.'", "filename":"'.$filename.'"}';
+        // echo '{"filename":"'.$_FILES['upl'].'"'};
+        // echo '{"":"'.$allowed_string.'"}';
         exit;
     }
 
