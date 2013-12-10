@@ -1,5 +1,4 @@
 <?php
-
 //Register post type
 add_action( 'init', 'register_sg_grp_msg' );
 
