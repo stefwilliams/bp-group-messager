@@ -6,10 +6,10 @@
  * @since   1.0.0 - 05.02.2012
  */
 tha_sidebars_before(); ?>
-<section id="secondary" class="widget-area span3" role="complementary">
+<section id="secondary" class="widget-area span4" role="complementary">
   <style type="text/css">
     /*removing buttons from WYSIWG*/
-    #messagecontent_blockquote, #messagecontent_strikethrough, #messagecontent_justifyleft, #messagecontent_justifycenter, #messagecontent_justifyright, #messagecontent_fullscreen {
+    #messagecontent_justifyleft, #messagecontent_justifycenter, #messagecontent_justifyright, #messagecontent_strikethrough {
       display: none;
     }
 
@@ -29,9 +29,9 @@ if ($groupmember == 1) {
 }
 
 ?>
-<div id="group-contact">
+<div id="group-contact" class="well">
   <form id="sg-group-messsage" action="" method="post">
-      <legend>Contact <?php echo $sg_group->name; ?></legend>
+      <h3>Contact <?php echo $sg_group->name; ?></h3>
     <fieldset id="fieldset">
 <?php $ts = time();?>
     <input type="hidden" name="nonce" id="nonce" value="<?php echo $ajax_nonce; ?>">  
@@ -73,9 +73,10 @@ if ($groupmember == 1) {
     <button type="submit" class="btn btn-inverse btn-block" id="sendgroupmail">Send Email</button>
     </fieldset> 
   </form>
-</div>
-<div class="ajaxsending" style="display:none;"></div>
+  <div class="ajaxsending" style="display:none;"></div>
 <div class="ajaxsend" style="display:none;"></div>
+</div>
+
 
   <?php tha_sidebar_bottom(); ?>
 </section><!-- #secondary .widget-area -->

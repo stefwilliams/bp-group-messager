@@ -1,5 +1,5 @@
 jQuery(document).ready(function() {
-    jQuery('#sendgroupmail').click(function() {
+    jQuery('#sendgroupmail').click(function(e) {
         var sg_user = jQuery('input#userid').val();
         var sg_group_id = jQuery('input#groupid').val();
         var groupname = jQuery('input#groupname').val();
@@ -28,7 +28,11 @@ jQuery(document).ready(function() {
 
     jQuery ('fieldset#fieldset').attr('style','display:none;');
     jQuery ('.ajaxsending').attr('style','display:block;');
-    jQuery ('.ajaxsending').delay(100).append ('<p>Going...</p>');
+    jQuery ('.ajaxsending').delay(10).append ('<p>Going...</p>');
+      // setInterval(function(){
+      //   jQuery ('.ajaxsending').append ('<p>Going...</p>');      
+      // }, 10);
+
     
     var data = {
     action: "sendgroupemail",
@@ -44,12 +48,12 @@ jQuery(document).ready(function() {
     nonce: nonce
   };
   jQuery.post(ajax_object.ajax_url, data, function(response) {
-    jQuery ('.ajaxsending').attr('style','display:none;');
+    // jQuery ('.ajaxsending').attr('style','display:none;');
     jQuery ('.ajaxsend').attr('style','display:block;');
-    jQuery ('.ajaxsend').append ('<p>Your message "'  + response + '" was sent.</p>');
+    jQuery ('.ajaxsend').append ('<p>Gone!</p><p>Your message:</p><label> "'  + response + '"</label><p>was sent.</p>');
   });
 return false;
-
+e.preventDefault();
 
     });
   });

@@ -51,7 +51,7 @@ add_action( 'init', 'add_groupemailscripts' );
 
 
 function send_group_email($upload_dir){
-	$subject = $_POST ['subject'];
+	$subject = stripslashes_deep ($_POST ['subject']);
 	$content = stripslashes_deep( $_POST ['content'] );
 	$user = $_POST ['user'];
 	$sg_group_id = $_POST ['group'];
