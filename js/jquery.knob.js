@@ -1,5 +1,6 @@
 /*!jQuery Knob*/
 /**
+ *
  * Downward compatible, touchable dial
  *
  * Version: 1.2.0 (15/07/2012)
