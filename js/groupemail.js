@@ -28,10 +28,13 @@ jQuery(document).ready(function() {
 
     jQuery ('fieldset#fieldset').attr('style','display:none;');
     jQuery ('.ajaxsending').attr('style','display:block;');
-    jQuery ('.ajaxsending').delay(10).append ('<p>Going...</p>');
-      // setInterval(function(){
-      //   jQuery ('.ajaxsending').append ('<p>Going...</p>');      
-      // }, 10);
+    // jQuery ('.ajaxsending').delay(10).append ('<p>Going...</p>');
+      var interval=setInterval(function(){
+        jQuery ('.ajaxsending').append ('<p>Going...</p>'); 
+        if (jQuery ('.ajaxsend').css('display') == "block") {
+          clearInterval(interval);
+        }
+      }, 500);
 
     
     var data = {
