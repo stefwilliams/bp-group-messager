@@ -19,6 +19,7 @@ $sg_user = bp_loggedin_user_id();
 $sg_group_id = bp_get_current_group_id();
 $sg_group = groups_get_group(array('group_id'=>$sg_group_id));  
 $ajax_nonce = wp_create_nonce("bp-group-message");
+grp_msg_cleanup_temp_files(); /*cleanup any orphaned temp files*/
 
 $groupmember = $sg_group->is_member;
 

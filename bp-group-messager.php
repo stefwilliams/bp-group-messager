@@ -18,6 +18,43 @@ for reference
 */
 include ('cpt-sg-grp-msg.php');
 // include ('ajax_upload.php');
+
+function grp_msg_cleanup_temp_files() {
+	$seconds_old = 43200; /*12 hours*/
+	$upload_dir = wp_upload_dir();
+	$directory = $upload_dir['path'].'/grp_message_temp';
+	$scan = scandir($directory);
+	$to_delete = array();
+
+    if (is_dir($directory)) 
+    {
+        $objects = scandir($directory);
+        foreach ($objects as $object) 
+        {
+            if ($object != "." && $object != "..") 
+            {     
+            /*find folders older than $seconds_old and record them in $to_delete array*/       
+                if (filemtime($directory."/".$object) <= time()-$seconds_old) array_push($to_delete, $directory."/".$object);
+            }
+        }
+        reset($objects);
+        //rmdir($directory);
+    }
+    /*delete all files in $to_delete folders, then delete folder*/
+	if ($to_delete) {
+		foreach ($to_delete as $folder) {
+			$files = glob($folder.'/*'); // get all file names
+			foreach ($files as $file) {
+				if (is_file($file)) {
+					unlink($file);
+				}
+			}
+		rmdir($folder);
+		}
+	}
+}
+
+
 function add_groupemail_sidebar() 
 {
 	global $bp;
@@ -80,7 +117,7 @@ if ($attachments) {
 		
 		rename($temp_path.'/'.$attachment, $end_path.'/'.$attachment);
 
-		//create array with full path to attachement for wp_mail below
+		//create array with full path to attachment for wp_mail below
 		array_push($attachments_tosend, $end_path.'/'.$attachment);
 
 	}
