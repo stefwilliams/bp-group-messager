@@ -114,7 +114,8 @@ if ($attachments) {
 	$attachments_tosend = array();
     	mkdir($end_path, 0777, true);
 	foreach ($attachments as $attachment) {	
-		
+
+		$attachment = sanitize_file_name($attachment);
 		rename($temp_path.'/'.$attachment, $end_path.'/'.$attachment);
 
 		//create array with full path to attachment for wp_mail below

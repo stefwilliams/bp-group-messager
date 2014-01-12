@@ -31,7 +31,7 @@ if(isset($_FILES['upl']) && $_FILES['upl']['error'] == 0){
     
     
     if(!in_array(strtolower($extension), $allowed)){
-        error_log(var_export($_FILES, true));
+        // error_log(var_export($_FILES, true));
         $filename = $_FILES['upl']['name'];
     	// error_log("disallowed extension");
         // header('Content-type: application/json');

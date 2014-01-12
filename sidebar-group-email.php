@@ -15,6 +15,9 @@ tha_sidebars_before(); ?>
 
   </style>
 <?php 
+
+
+
 $sg_user = bp_loggedin_user_id();
 $sg_group_id = bp_get_current_group_id();
 $sg_group = groups_get_group(array('group_id'=>$sg_group_id));  
@@ -33,6 +36,10 @@ if ($groupmember == 1) {
 <div id="group-contact" class="well">
   <form id="sg-group-messsage" action="" method="post">
       <h3>Contact <?php echo $sg_group->name; ?></h3>
+      <?php if (!is_user_logged_in()) {
+        echo "You need to be logged in.";
+        goto grp_email_end;
+      } ?>
     <fieldset id="fieldset">
 <?php $ts = time();?>
     <input type="hidden" name="nonce" id="nonce" value="<?php echo $ajax_nonce; ?>">  
@@ -73,12 +80,16 @@ if ($groupmember == 1) {
     <label class="checkbox">Send a copy to yourself<input type="checkbox" name="self_send" value="send" id="self_send"/></label>
     <button type="submit" class="btn btn-inverse btn-block" id="sendgroupmail">Send Email</button>
     </fieldset> 
+    <?php 
+grp_email_end:
+?>
   </form>
   <div class="ajaxsending" style="display:none;"></div>
 <div class="ajaxsend" style="display:none;"></div>
 </div>
 
 
-  <?php tha_sidebar_bottom(); ?>
+  <?php 
+  tha_sidebar_bottom(); ?>
 </section><!-- #secondary .widget-area -->
 <?php tha_sidebars_after();
