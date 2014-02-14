@@ -9,21 +9,78 @@ Author URI: http://URI_Of_The_Plugin_Author
 License: GPL2
 */
 
-/* get if code from sidebar.php and make it point to new sidebar in widgets folder
-Rework sidebar code to point to admin ajax, and copy js code to js folder...
-use: http://www.colinjmorgan.com/using-ajax-in-wordpress/
-and: http://net.tutsplus.com/tutorials/javascript-ajax/submit-a-form-without-page-refresh-using-jquery/
-http://codex.wordpress.org/AJAX_in_Plugins
-for reference
-*/
 include ('cpt-sg-grp-msg.php');
-// include ('ajax_upload.php');
+
+add_action('plugins_loaded', 'delete_old_grp_messages'); //deletes old mesages and attachments
+
+add_action( 'before_delete_post', 'before_delete_grp_messages' ); //deletes attachments if messages manually deleted in the backend.
+
+function before_delete_grp_messages( $postid ){
+    // We check if the global post type isn't ours and just return
+    global $post_type;   
+    if ( $post_type != 'sg_grp_msg' ) return;
+    else {
+    	find_and_delete_attachments_folder($postid);
+	}
+    
+}
+
+function delete_old_grp_messages() {
+	$expirydate = mktime(0, 0, 0, date("m")-1, date("d"), date("Y")); //one month expiry
+	$args = array(
+		'post_type' => 'sg_grp_msg',
+		'date_query' => array(
+			array(
+				'before'    => array(
+					'year'  => date("Y" ,$expirydate),
+					'month' => date("m" ,$expirydate),
+					'day'   => date("d" ,$expirydate),
+					),
+				'inclusive' => true,
+				),
+			),
+		'posts_per_page' => -1,
+		);
+	$query = new WP_Query( $args );
+	//print_r($query);
+	$posts_to_delete = array();
+
+	while ( $query->have_posts() ) : $query->the_post(); 
+		array_push($posts_to_delete, $query->post->ID);
+		find_and_delete_attachments_folder($query->post->ID);
+	endwhile;
+
+	foreach ($posts_to_delete as $post) {
+		wp_delete_post($post, true);
+	}
+
+	// Reset Post Data
+	wp_reset_postdata();
+	// print_r($posts_to_delete);
+	
+}
+
+function find_and_delete_attachments_folder($post_id) {
+	$attachments = get_post_meta ($post_id, 'attachments',true);
+	if($attachments){
+		$attachment_folders_to_delete = array();
+		foreach ($attachments as $attachment){
+			$attachment_folder = dirname($attachment);
+			// print_r($attachment_folder);
+			array_push($attachment_folders_to_delete, $attachment_folder);
+		}
+		array_unique($attachment_folders_to_delete);
+		// print_r($attachment_folders_to_delete);
+	// error_log(var_export($attachment_folders_to_delete, true));
+		delete_folders_and_contents($attachment_folders_to_delete);
+	}
+	// print_r($attachment_folders_to_delete);
+}
 
 function grp_msg_cleanup_temp_files() {
 	$seconds_old = 43200; /*12 hours*/
 	$upload_dir = wp_upload_dir();
 	$directory = $upload_dir['path'].'/grp_message_temp';
-	$scan = scandir($directory);
 	$to_delete = array();
 
     if (is_dir($directory)) 
@@ -40,8 +97,14 @@ function grp_msg_cleanup_temp_files() {
         reset($objects);
         //rmdir($directory);
     }
+
     /*delete all files in $to_delete folders, then delete folder*/
 	if ($to_delete) {
+		delete_folders_and_contents($to_delete);
+	}
+}
+
+function delete_folders_and_contents ($to_delete) {
 		foreach ($to_delete as $folder) {
 			$files = glob($folder.'/*'); // get all file names
 			foreach ($files as $file) {
@@ -51,9 +114,7 @@ function grp_msg_cleanup_temp_files() {
 			}
 		rmdir($folder);
 		}
-	}
 }
-
 
 function add_groupemail_sidebar() 
 {
