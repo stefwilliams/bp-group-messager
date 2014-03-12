@@ -59,6 +59,7 @@ if ($groupmember == 1) {
       'media_buttons' => false,
       'teeny' => true,
       'textarea_name' => 'messagecontent',
+      'quicktags' => false
       );
     wp_editor('', 'messagecontent', $editor_settings); ?>
     <br />
