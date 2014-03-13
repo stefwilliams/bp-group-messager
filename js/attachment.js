@@ -59,7 +59,7 @@ jQuery(function(){
             var jqXHR = data.submit();
             // var response = jqXHR.responseText;
             // console.log(data);
-            console.log(jqXHR);
+            // console.log(jqXHR);
             // console.log(response);
         },
 
@@ -81,7 +81,7 @@ jQuery(function(){
             var response = data.jqXHR.responseText;
             // var upload = jQuery()
             var jresponse = JSON.parse(response);
-            console.log(jresponse);
+            // console.log(jresponse);
             if (jresponse.status=="bad_file") {
                 var target = data.context.find('input.attachment').attr('data-filename', jresponse.filename);
                 target.siblings('canvas').remove();
