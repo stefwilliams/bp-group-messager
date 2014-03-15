@@ -1,10 +1,36 @@
 <?php
-$server_root = $_SERVER['DOCUMENT_ROOT'];
+function fs_get_wp_config_path()
+{
+    $base = dirname(__FILE__);
+    $path = false;
+
+    if (@file_exists(dirname(dirname($base))."/wp-config.php"))
+    {
+        $path = dirname(dirname($base))."/wp-config.php";
+    }
+    else
+    if (@file_exists(dirname(dirname(dirname($base)))."/wp-config.php"))
+    {
+        $path = dirname(dirname(dirname($base)));
+    }
+    else
+    $path = false;
+
+    if ($path != false)
+    {
+        $path = str_replace("\\", "/", $path);
+    }
+    return $path;
+}
+
+// $server_root = $_SERVER['DOCUMENT_ROOT'];
+$server_root = fs_get_wp_config_path();
 
 require (
 $server_root.'/wp-load.php');
 require (
 $server_root.'/wp-admin/includes/file.php');
+
 
 
 function change_upload_dir($upload_dir) {
