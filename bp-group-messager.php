@@ -148,6 +148,23 @@ add_action( 'init', 'add_groupemailscripts' );
 
 
 
+function bp_messager_mail_from($old) {
+	//get details of sender
+	$user = get_current_user_id();
+	$user_object = get_userdata($user);
+	$user_email = $user_object->user_email;
+ return $user_email;
+}
+function bp_messager_mail_from_name($old) {
+	//get details of sender
+	$user = get_current_user_id();
+	$user_object = get_userdata($user);
+	$user_name = $user_object->display_name;
+ return $user_name.' via the Samba Website';
+}
+
+
+
 function send_group_email($upload_dir){
 	$subject = stripslashes_deep ($_POST ['subject']);
 	$content = stripslashes_deep( $_POST ['content'] );
@@ -266,19 +283,25 @@ add_filter('wp_mail_content_type',create_function('', 'return "text/html";'));
 // create 'to' field
 $to_field = $sg_groupname . '<noreply@sambagalez.info>';
 
-//get details of sender
-$user_object = get_userdata($user);
-$user_email = $user_object->user_email;
-$user_name = $user_object->display_name;
+	//get details of sender
+	$user_object = get_userdata($user);
+	$user_email = $user_object->user_email;
+	$user_name = $user_object->display_name;
+
+
 
 // create mail headers
-$mail_headers[] = 'From:'.$user_name.'<noreply@sambagalez.info>'."\r\n";
-$mail_headers[] = 'Reply-to:'.$user_name.'<'.$user_email.'>'."\r\n";
+// $mail_headers[] = 'From:'.$user_name.'<noreply@sambagalez.info>'."\r\n";
+// $mail_headers[] = 'Reply-to:'.$user_name.'<'.$user_email.'>'."\r\n";
 $mail_headers[] = 'Bcc:'.implode( ",", $sg_all_group_emails );
 
-$content = "<p>This message was sent via the Samba Gal&ecirc;z website by <strong>".$user_name."</strong></p><p>To reply directly to ".$user_name." you can use your normal email reply. To message all recipients in the ".$sg_groupname." group, please use the form on the website.</p><p>Message follows:</p><hr />".$content;
+$mailcontent = "<p>This message was sent via the Samba Gal&ecirc;z website by <strong>".$user_name."</strong></p><p>To reply directly, you can use your normal email reply. To message all recipients in ".$sg_groupname.", please use the form on the website.</p><p>Message follows:</p><hr />".$content;
 
-wp_mail($to_field, $subject, $content, $mail_headers, $attachments_tosend);
+add_filter('wp_mail_from', 'bp_messager_mail_from');
+add_filter('wp_mail_from_name', 'bp_messager_mail_from_name');
+wp_mail($to_field, $subject, $mailcontent, $mail_headers, $attachments_tosend);
+remove_filter('wp_mail_from', 'bp_messager_mail_from');
+remove_filter('wp_mail_from_name', 'bp_messager_mail_from_name');
 
 
 //INSERT CPT into database to allow sent emails to be reviewed
