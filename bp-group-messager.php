@@ -276,9 +276,9 @@ $mail_headers[] = 'From:'.$user_name.'<noreply@sambagalez.info>'."\r\n";
 $mail_headers[] = 'Reply-to:'.$user_name.'<'.$user_email.'>'."\r\n";
 $mail_headers[] = 'Bcc:'.implode( ",", $sg_all_group_emails );
 
-$mailcontent = "<p>This message was sent via the Samba Gal&ecirc;z website by <strong>".$user_name."</strong></p><p>To reply directly to ".$user_name." you can use your normal email reply. To message all recipients in the ".$sg_groupname." group, please use the form on the website.</p><p>Message follows:</p><hr />".$content;
+$content = "<p>This message was sent via the Samba Gal&ecirc;z website by <strong>".$user_name."</strong></p><p>To reply directly to ".$user_name." you can use your normal email reply. To message all recipients in the ".$sg_groupname." group, please use the form on the website.</p><p>Message follows:</p><hr />".$content;
 
-wp_mail($to_field, $subject, $mailcontent, $mail_headers, $attachments_tosend);
+wp_mail($to_field, $subject, $content, $mail_headers, $attachments_tosend);
 
 
 //INSERT CPT into database to allow sent emails to be reviewed
