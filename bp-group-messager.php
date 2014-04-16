@@ -44,7 +44,11 @@ function delete_old_grp_messages() {
 	$query = new WP_Query( $args );
 	//print_r($query);
 	$posts_to_delete = array();
+<<<<<<< HEAD
 if ($query->found_posts > 0) {
+=======
+if ($query) {
+>>>>>>> 85c51f3a47cfe94d6f3a857b00a2cbce9ab2e7ca
 	
 
 	while ( $query->have_posts() ) : $query->the_post(); 
