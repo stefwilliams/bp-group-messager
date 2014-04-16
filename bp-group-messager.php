@@ -44,6 +44,8 @@ function delete_old_grp_messages() {
 	$query = new WP_Query( $args );
 	//print_r($query);
 	$posts_to_delete = array();
+if ($query->found_posts > 0) {
+	
 
 	while ( $query->have_posts() ) : $query->the_post(); 
 		array_push($posts_to_delete, $query->post->ID);
@@ -53,7 +55,7 @@ function delete_old_grp_messages() {
 	foreach ($posts_to_delete as $post) {
 		wp_delete_post($post, true);
 	}
-
+}
 	// Reset Post Data
 	wp_reset_postdata();
 	// print_r($posts_to_delete);
