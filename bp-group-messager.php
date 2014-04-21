@@ -45,11 +45,15 @@ function delete_old_grp_messages() {
 	//print_r($query);
 	$posts_to_delete = array();
 if ($query->found_posts > 0) {
-	
-	while ( $query->have_posts() ) : $query->the_post(); 
-		array_push($posts_to_delete, $query->post->ID);
-		find_and_delete_attachments_folder($query->post->ID);
-	endwhile;
+	$posts_found = $query->posts;
+	foreach ($posts_found as $post_found) {
+		array_push($posts_to_delete, $post_found->ID);
+		find_and_delete_attachments_folder($post_found->ID);
+	}
+	// while ( $query->have_posts() ) : $query->the_post(); 
+	// 	array_push($posts_to_delete, $query->post->ID);
+	// 	find_and_delete_attachments_folder($query->post->ID);
+	// endwhile;
 
 	foreach ($posts_to_delete as $post) {
 		wp_delete_post($post, true);
