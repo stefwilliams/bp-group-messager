@@ -42,7 +42,6 @@ function delete_old_grp_messages() {
 		'posts_per_page' => -1,
 		);
 	$query = new WP_Query( $args );
-	//print_r($query);
 	$posts_to_delete = array();
 if ($query->found_posts > 0) {
 	$posts_found = $query->posts;
@@ -84,8 +83,8 @@ function find_and_delete_attachments_folder($post_id) {
 
 function grp_msg_cleanup_temp_files() {
 	$seconds_old = 43200; /*12 hours*/
-	$upload_dir = wp_upload_dir();
-	$directory = $upload_dir['path'].'/grp_message_temp';
+	$bp_grp_upload_dir = wp_upload_dir();
+	$directory = $bp_grp_upload_dir['path'].'/grp_message_temp';
 	$to_delete = array();
 
     if (is_dir($directory)) 
@@ -170,7 +169,7 @@ function bp_messager_mail_from_name($old) {
 
 
 
-function send_group_email($upload_dir){
+function send_group_email($bp_grp_upload_dir){
 	$subject = stripslashes_deep ($_POST ['subject']);
 	$content = stripslashes_deep( $_POST ['content'] );
 	$user = $_POST ['user'];
@@ -184,11 +183,11 @@ function send_group_email($upload_dir){
 	$attachments = $_POST['attachment'];
 	$ts = time();
 	// error_log(var_export($_POST,true)); 
-	$upload_dir = wp_upload_dir();
-	$upload_dir = $upload_dir['basedir'];
-	// error_log(var_export($upload_dir, true));
-		$temp_path = $upload_dir.'/grp_message_temp/'.$tempdir;
-		$end_path = $upload_dir.'/grp_message_attachments/'.$user.'-'.$ts;
+	$bp_grp_upload_dir = wp_upload_dir();
+	$bp_grp_upload_dir = $bp_grp_upload_dir['basedir'];
+	// error_log(var_export($bp_grp_upload_dir, true));
+		$temp_path = $bp_grp_upload_dir.'/grp_message_temp/'.$tempdir;
+		$end_path = $bp_grp_upload_dir.'/grp_message_attachments/'.$user.'-'.$ts;
 
 		
 // move attachments from tempdir to group_msg_attachment directory and delete temp directory
@@ -199,6 +198,7 @@ if ($attachments) {
 	foreach ($attachments as $attachment) {	
 
 		$attachment = sanitize_file_name($attachment);
+
 		rename($temp_path.'/'.$attachment, $end_path.'/'.$attachment);
 
 		//create array with full path to attachment for wp_mail below
@@ -206,7 +206,7 @@ if ($attachments) {
 
 	}
 //find any orphaned files in temp dir and delete
-$files = glob($upload_dir.'/grp_message_temp/'.$tempdir.'/*'); // get all file names
+$files = glob($bp_grp_upload_dir.'/grp_message_temp/'.$tempdir.'/*'); // get all file names
 if ($files) {
 	foreach ($files as $file) { // iterate files
 	  if(is_file($file))
@@ -214,7 +214,7 @@ if ($files) {
 	}
 }
 // delete temp directory
-rmdir($upload_dir.'/grp_message_temp/'.$tempdir);
+rmdir($bp_grp_upload_dir.'/grp_message_temp/'.$tempdir);
 }
 	//
 

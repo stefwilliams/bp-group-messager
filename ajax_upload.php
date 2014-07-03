@@ -1,4 +1,6 @@
 <?php
+$server_root = $_SERVER['DOCUMENT_ROOT'];
+
 function fs_get_wp_config_path()
 {
     $base = dirname(__FILE__);
@@ -32,19 +34,18 @@ require (
 $server_root.'/wp-admin/includes/file.php');
 
 
-
-function change_upload_dir($upload_dir) {
+function bp_grp_change_upload_dir($bp_grp_upload_dir) {
 	    $tmp_dir = $_POST['tempdir'];
 	    // error_log(var_export($tmp_dir, true));
 	//create directory for upload if not exists
 // $wp_upload_dir = wp_upload_dir();
-// if (!file_exists($upload_dir.'/grp_message_temp/'.$tmp_dir)) {
-//     mkdir($upload_dir.'/grp_message_temp/'.$tmp_dir, 0777, true);
+// if (!file_exists($bp_grp_upload_dir.'/grp_message_temp/'.$tmp_dir)) {
+//     mkdir($bp_grp_upload_dir.'/grp_message_temp/'.$tmp_dir, 0777, true);
 // }
-    $upload_dir['subdir'] = '/grp_message_temp/'.$tmp_dir . $upload_dir['subdir'];
-    $upload_dir['path']   = $upload_dir['basedir'] . $upload_dir['subdir'];
-    $upload_dir['url']    = $upload_dir['baseurl'] . $upload_dir['subdir'];
-    return $upload_dir;
+    $bp_grp_upload_dir['subdir'] = '/grp_message_temp/'.$tmp_dir . $bp_grp_upload_dir['subdir'];
+    $bp_grp_upload_dir['path']   = $bp_grp_upload_dir['basedir'] . $bp_grp_upload_dir['subdir'];
+    $bp_grp_upload_dir['url']    = $bp_grp_upload_dir['baseurl'] . $bp_grp_upload_dir['subdir'];
+    return $bp_grp_upload_dir;
 }
 
 
@@ -68,9 +69,9 @@ if(isset($_FILES['upl']) && $_FILES['upl']['error'] == 0){
     }
 
     else {
-        add_filter( 'upload_dir', 'change_upload_dir');
+        add_filter( 'upload_dir', 'bp_grp_change_upload_dir');
         $upload = wp_handle_upload( $_FILES['upl'], array('test_form' => false) );
-        remove_filter( 'upload_dir', 'change_upload_dir' );
+        remove_filter( 'upload_dir', 'bp_grp_change_upload_dir' );
         echo '{"status":"success"}';
         exit;
    	}
