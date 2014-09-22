@@ -180,7 +180,10 @@ function send_group_email($bp_grp_upload_dir){
 	$noncecheck = check_ajax_referer( 'bp-group-message', 'nonce' );
 	$groupmem = $_POST ['groupmem'];
 	$tempdir = $_POST ['tempdir'];
-	$attachments = $_POST['attachment'];
+	if (isset($_POST['attachment'])) {
+		$attachments = $_POST['attachment'];
+	}
+	
 	$ts = time();
 	// error_log(var_export($_POST,true)); 
 	$bp_grp_upload_dir = wp_upload_dir();
@@ -192,7 +195,7 @@ function send_group_email($bp_grp_upload_dir){
 		
 // move attachments from tempdir to group_msg_attachment directory and delete temp directory
 
-if ($attachments) {
+if (isset($attachments)) {
 	$attachments_tosend = array();
     	mkdir($end_path, 0777, true);
 	foreach ($attachments as $attachment) {	
@@ -216,6 +219,9 @@ if ($files) {
 // delete temp directory
 rmdir($bp_grp_upload_dir.'/grp_message_temp/'.$tempdir);
 }
+else {
+	$attachments_tosend = NULL;
+}
 	//
 
 
@@ -236,16 +242,8 @@ $sg_group_members = groups_get_group_members (
 		)
 	);	
 $sg_group_members = $sg_group_members['members'];
-$sg_group_admins = groups_get_group_admins ( 
-	array(
-		'group_id'=>$sg_group_id
-		)
-	);	
-$sg_group_mods = groups_get_group_mods ( 
-	array(
-		'group_id'=>$sg_group_id
-		)
-	);	
+$sg_group_admins = groups_get_group_admins ($sg_group_id);	
+$sg_group_mods = groups_get_group_mods ($sg_group_id);	
 $sg_all_group_members = array();
 foreach ($sg_group_members as $member) {
 	array_push($sg_all_group_members, $member->user_id);

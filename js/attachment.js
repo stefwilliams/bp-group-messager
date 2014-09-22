@@ -93,6 +93,8 @@ jQuery(function(){
         fail:function(e, data){
             // Something has gone wrong!
             data.context.addClass('error');
+            // console.log(e);
+            // console.log(data);
         }
 
     });

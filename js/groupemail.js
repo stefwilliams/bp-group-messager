@@ -52,6 +52,7 @@ jQuery(document).ready(function() {
   };
   jQuery.post(ajax_object.ajax_url, data, function(response) {
     // jQuery ('.ajaxsending').attr('style','display:none;');
+    // console.log(response);
     jQuery ('.ajaxsend').attr('style','display:block;');
     jQuery ('.ajaxsend').append ('<p>Gone!</p><p>Your message:</p><label> "'  + response + '"</label><p>was sent.</p>');
   });
