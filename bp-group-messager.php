@@ -154,10 +154,11 @@ add_action( 'init', 'add_groupemailscripts' );
 
 function bp_messager_mail_from($old) {
 	//get details of sender
-	$user = get_current_user_id();
-	$user_object = get_userdata($user);
-	$user_email = $user_object->user_email;
- return $user_email;
+	// $user = get_current_user_id();
+	// $user_object = get_userdata($user);
+	// $user_email = $user_object->user_email;
+ // return $user_email;
+	return 'noreply@sambagalez';
 }
 function bp_messager_mail_from_name($old) {
 	//get details of sender
@@ -295,10 +296,10 @@ $to_field = $sg_groupname . '<noreply@sambagalez.info>';
 
 // create mail headers
 // $mail_headers[] = 'From:'.$user_name.'<noreply@sambagalez.info>'."\r\n";
-// $mail_headers[] = 'Reply-to:'.$user_name.'<'.$user_email.'>'."\r\n";
+$mail_headers[] = 'Reply-to:'.$user_name.'<'.$user_email.'>'."\r\n";
 $mail_headers[] = 'Bcc:'.implode( ",", $sg_all_group_emails );
 
-$mailcontent = "<p>This message was sent via the Samba Gal&ecirc;z website by <strong>".$user_name."</strong></p><p>To reply directly, you can use your normal email reply. To message all recipients in ".$sg_groupname.", please use the form on the website.</p><p>Message follows:</p><hr />".$content;
+$mailcontent = $content."<hr /><p>This message was sent via the Samba Gal&ecirc;z website by <strong>".$user_name."</strong></p><p>To reply directly, you can use your normal email reply. To message all recipients in ".$sg_groupname.", please use the form on the website.</p><hr />";
 
 add_filter('wp_mail_from', 'bp_messager_mail_from');
 add_filter('wp_mail_from_name', 'bp_messager_mail_from_name');
