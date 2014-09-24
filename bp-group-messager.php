@@ -158,7 +158,7 @@ function bp_messager_mail_from($old) {
 	// $user_object = get_userdata($user);
 	// $user_email = $user_object->user_email;
  // return $user_email;
-	return 'noreply@sambagalez';
+	return 'noreply@sambagalez.info';
 }
 function bp_messager_mail_from_name($old) {
 	//get details of sender
@@ -285,7 +285,8 @@ foreach ($sg_all_group_members as $member) {
 add_filter('wp_mail_content_type',create_function('', 'return "text/html";'));
 
 // create 'to' field
-$to_field = $sg_groupname . '<noreply@sambagalez.info>';
+// $to_field = $sg_groupname . '<noreply@sambagalez.info>';
+$to_field = implode( ",", $sg_all_group_emails );
 
 	//get details of sender
 	$user_object = get_userdata($user);
@@ -297,7 +298,7 @@ $to_field = $sg_groupname . '<noreply@sambagalez.info>';
 // create mail headers
 // $mail_headers[] = 'From:'.$user_name.'<noreply@sambagalez.info>'."\r\n";
 $mail_headers[] = 'Reply-to:'.$user_name.'<'.$user_email.'>'."\r\n";
-$mail_headers[] = 'Bcc:'.implode( ",", $sg_all_group_emails );
+// $mail_headers[] = 'Bcc:'.implode( ",", $sg_all_group_emails );
 
 $mailcontent = $content."<hr /><p>This message was sent via the Samba Gal&ecirc;z website by <strong>".$user_name."</strong></p><p>To reply directly, you can use your normal email reply. To message all recipients in ".$sg_groupname.", please use the form on the website.</p><hr />";
 
