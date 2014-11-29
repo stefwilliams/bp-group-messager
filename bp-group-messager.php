@@ -295,7 +295,7 @@ add_filter('wp_mail_content_type',function($content_type, $boundary){
 
 // create 'to' field
 // $to_field = $sg_groupname . '<noreply@sambagalez.info>';
-$to_field = implode( ",", $sg_all_group_emails );
+$to_field = $sg_groupname." <".$group_array -> slug."@sambagalez.info>";
 
 	//get details of sender
 	$user_object = get_userdata($user);
@@ -307,7 +307,7 @@ $textcontent = wp_strip_all_tags( $content, false);
 // create mail headers
 // $mail_headers[] = 'From:'.$user_name.'<noreply@sambagalez.info>'."\r\n";
 // $mail_headers[] = 'Reply-to:'.$user_name.'<'.$user_email.'>'."\r\n";
-// $mail_headers[] = 'Bcc:'.implode( ",", $sg_all_group_emails );
+$mail_headers[] = 'Cc:'.implode( ",", $sg_all_group_emails );
 
 $mailcontent = 
 $boundary.
@@ -322,7 +322,7 @@ Content-type: text/html; charset="UTF-8"
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 <title>'.$subject.'</title>
 </head>
-<body>'.$content.'<hr /><p>This message was sent via the Samba Gal&ecirc;z website by <strong>'.$user_name.'</strong></p><p>To reply directly, please do not use your normal reply, <a href="mailto:'.$user_email.'?subject=Re:'.$subject.'&body='.$textcontent.'">try this link</a> instead. To message all recipients in '.$sg_groupname.', please use the form on the <a href="'.$group_url.'">group page</a>.</p><hr />
+<body>'.$content.'<hr /><p>This message was sent via the Samba Gal&ecirc;z website by <strong>'.$user_name.'</strong></p><p>To reply directly, please do not use your normal reply as IT WILL NOT WORK, <a href="mailto:'.$user_email.'?subject=Re:'.$subject.'&body='.$textcontent.'">try this link</a> instead.</p><p> To message all recipients in '.$sg_groupname.', please use the form on the <a href="'.$group_url.'">group page</a>.</p><hr />
 </body>
 </html>';
 
