@@ -171,10 +171,15 @@ function bp_messager_mail_from_name($old) {
 
 
 function send_group_email($bp_grp_upload_dir){
+	global $bp;
 	$subject = stripslashes_deep ($_POST ['subject']);
 	$content = stripslashes_deep( $_POST ['content'] );
 	$user = $_POST ['user'];
 	$sg_group_id = $_POST ['group'];
+	//get URL of group
+	$group_array = groups_get_group( array( 'group_id' => $sg_group_id ) );
+	$group_url = home_url( $bp->groups->slug . '/' . $group_array -> slug );
+
 	$sg_groupname = $_POST ['groupname'];
 	$self_send = $_POST ['self_send'];
 	$nonce = $_POST ['nonce'];
@@ -183,8 +188,7 @@ function send_group_email($bp_grp_upload_dir){
 	$tempdir = $_POST ['tempdir'];
 	if (isset($_POST['attachment'])) {
 		$attachments = $_POST['attachment'];
-	}
-	
+	}	
 	$ts = time();
 	// error_log(var_export($_POST,true)); 
 	$bp_grp_upload_dir = wp_upload_dir();
@@ -297,10 +301,10 @@ $to_field = implode( ",", $sg_all_group_emails );
 
 // create mail headers
 // $mail_headers[] = 'From:'.$user_name.'<noreply@sambagalez.info>'."\r\n";
-$mail_headers[] = 'Reply-to:'.$user_name.'<'.$user_email.'>'."\r\n";
+// $mail_headers[] = 'Reply-to:'.$user_name.'<'.$user_email.'>'."\r\n";
 // $mail_headers[] = 'Bcc:'.implode( ",", $sg_all_group_emails );
 
-$mailcontent = $content."<hr /><p>This message was sent via the Samba Gal&ecirc;z website by <strong>".$user_name."</strong></p><p>To reply directly, you can use your normal email reply. To message all recipients in ".$sg_groupname.", please use the form on the website.</p><hr />";
+$mailcontent = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN' 'http://www.w3.org/TR/html4/loose.dtd'><html><head><meta http-equiv='Content-Type' content='text/html;charset=UTF-8'><title>".$subject."</title></head>".$content."<hr /><p>This message was sent via the Samba Gal&ecirc;z website by <strong>".$user_name."</strong></p><p>To reply directly, please do not use your normal reply, <a href='mailto:".$user_email."'>try this link</a> instead. To message all recipients in ".$sg_groupname.", please use the form on the <a href='".$group_url."'>group page</a>.</p><hr /></html>";
 
 add_filter('wp_mail_from', 'bp_messager_mail_from');
 add_filter('wp_mail_from_name', 'bp_messager_mail_from_name');
