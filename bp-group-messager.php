@@ -285,8 +285,13 @@ foreach ($sg_all_group_members as $member) {
 	array_push($sg_all_group_emails, $member_email);
 }
 
+
+$boundary = "--00multipartboundary00";
 //insert header for HTML emails
-add_filter('wp_mail_content_type',create_function('', 'return "text/html";'));
+add_filter('wp_mail_content_type',function($content_type, $boundary){
+	return 'multipart/alternative;
+	boundary="00multipartboundary00"';
+});
 
 // create 'to' field
 // $to_field = $sg_groupname . '<noreply@sambagalez.info>';
@@ -297,18 +302,35 @@ $to_field = implode( ",", $sg_all_group_emails );
 	$user_email = $user_object->user_email;
 	$user_name = $user_object->display_name;
 
-
+$textcontent = wp_strip_all_tags( $content, false);
 
 // create mail headers
 // $mail_headers[] = 'From:'.$user_name.'<noreply@sambagalez.info>'."\r\n";
 // $mail_headers[] = 'Reply-to:'.$user_name.'<'.$user_email.'>'."\r\n";
 // $mail_headers[] = 'Bcc:'.implode( ",", $sg_all_group_emails );
 
-$mailcontent = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN' 'http://www.w3.org/TR/html4/loose.dtd'><html><head><meta http-equiv='Content-Type' content='text/html;charset=UTF-8'><title>".$subject."</title></head>".$content."<hr /><p>This message was sent via the Samba Gal&ecirc;z website by <strong>".$user_name."</strong></p><p>To reply directly, please do not use your normal reply, <a href='mailto:".$user_email."'>try this link</a> instead. To message all recipients in ".$sg_groupname.", please use the form on the <a href='".$group_url."'>group page</a>.</p><hr /></html>";
+$mailcontent = 
+$boundary.
+'Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+'.$textcontent.'
+'.$boundary.'
+Content-type: text/html; charset="UTF-8"
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>'.$subject.'</title>
+</head>
+<body>'.$content.'<hr /><p>This message was sent via the Samba Gal&ecirc;z website by <strong>'.$user_name.'</strong></p><p>To reply directly, please do not use your normal reply, <a href="mailto:'.$user_email.'?subject=Re:'.$subject.'&body='.$textcontent.'">try this link</a> instead. To message all recipients in '.$sg_groupname.', please use the form on the <a href="'.$group_url.'">group page</a>.</p><hr />
+</body>
+</html>';
+
+
 
 add_filter('wp_mail_from', 'bp_messager_mail_from');
 add_filter('wp_mail_from_name', 'bp_messager_mail_from_name');
-wp_mail($to_field, $subject, $mailcontent, $mail_headers, $attachments_tosend);
+wp_mail($to_field, $subject, $mailcontent.$encoded_qp, $mail_headers, $attachments_tosend);
 remove_filter('wp_mail_from', 'bp_messager_mail_from');
 remove_filter('wp_mail_from_name', 'bp_messager_mail_from_name');
 
