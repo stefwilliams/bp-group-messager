@@ -330,7 +330,7 @@ Content-Transfer-Encoding: quoted-printable
 
 <body>'.$content_qp.'<hr /><p>This message was sent via the Samba Gal&ecirc;z website by <strong>'.$user_name.'</strong></p>
 <p>To reply directly, please do not use your normal reply as IT WILL NOT WORK, <a href=3D"mailto:'.$user_email.'?subject=3DRe:'.$subject.'&body=3D
-'.$user_name.' said: '.$textcontent.'">try this link</a> instead.</p>
+%0D%0A %0D%0A'.$user_name.' said: %0D%0A'.$textcontent.'">try this link</a> instead.</p>
 <p> To message all recipients in '.$sg_groupname.', please use the form on the <a href=3D"'.$group_url.'">group page</a>.</p>
 <hr />
 </body>
