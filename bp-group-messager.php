@@ -309,28 +309,39 @@ $textcontent = wp_strip_all_tags( $content, false);
 // $mail_headers[] = 'Reply-to:'.$user_name.'<'.$user_email.'>'."\r\n";
 $mail_headers[] = 'Cc:'.implode( ",", $sg_all_group_emails );
 
+
+//wysiwyg content converted to 8bit then qp (just qp did not work for some reason)
+// $content_8bit = utf8_encode($content);
+$content_qp = quoted_printable_encode($content);
+
+//wrapping text has = signs as =3D to comply with quoted-printable encoding
+//also appears that line-break between <html> adn <body> is critical for iOS mail to show content.
+//also need NO <head> section, else it fails... what a palaver
 $mailcontent = 
-$boundary.
-'Content-Type: text/plain; charset="UTF-8"
+$boundary.'
+Content-Type: text/plain; charset=3D"UTF-8"
 Content-Transfer-Encoding: quoted-printable
 '.$textcontent.'
 '.$boundary.'
-Content-type: text/html; charset="UTF-8"
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-<title>'.$subject.'</title>
-</head>
-<body>'.$content.'<hr /><p>This message was sent via the Samba Gal&ecirc;z website by <strong>'.$user_name.'</strong></p><p>To reply directly, please do not use your normal reply as IT WILL NOT WORK, <a href="mailto:'.$user_email.'?subject=Re:'.$subject.'&body='.$textcontent.'">try this link</a> instead.</p><p> To message all recipients in '.$sg_groupname.', please use the form on the <a href="'.$group_url.'">group page</a>.</p><hr />
+Content-type: text/html; charset=3D"UTF-8"
+Content-Transfer-Encoding: quoted-printable
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml">
+
+<body>'.$content_qp.'<hr /><p>This message was sent via the Samba Gal&ecirc;z website by <strong>'.$user_name.'</strong></p>
+<p>To reply directly, please do not use your normal reply as IT WILL NOT WORK, <a href=3D"mailto:'.$user_email.'?subject=3DRe:'.$subject.'&body=3D
+'.$user_name.' said: '.$textcontent.'">try this link</a> instead.</p>
+<p> To message all recipients in '.$sg_groupname.', please use the form on the <a href=3D"'.$group_url.'">group page</a>.</p>
+<hr />
 </body>
 </html>';
-
-
+// $mailcontent_8bit = utf8_encode($mailcontent);
+// $mailcontent_qp = quoted_printable_encode($mailcontent);
+// $mailcontent_type = mb_detect_encoding($content);
 
 add_filter('wp_mail_from', 'bp_messager_mail_from');
 add_filter('wp_mail_from_name', 'bp_messager_mail_from_name');
-wp_mail($to_field, $subject, $mailcontent.$encoded_qp, $mail_headers, $attachments_tosend);
+wp_mail($to_field, $subject, $mailcontent, $mail_headers, $attachments_tosend);
 remove_filter('wp_mail_from', 'bp_messager_mail_from');
 remove_filter('wp_mail_from_name', 'bp_messager_mail_from_name');
 
