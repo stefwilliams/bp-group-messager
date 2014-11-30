@@ -313,10 +313,12 @@ $mail_headers[] = 'Cc:'.implode( ",", $sg_all_group_emails );
 //wysiwyg content converted to 8bit then qp (just qp did not work for some reason)
 // $content_8bit = utf8_encode($content);
 $content_qp = quoted_printable_encode($content);
+$time_string = date('D, M j, Y \a\t g:i A');
 
 //wrapping text has = signs as =3D to comply with quoted-printable encoding
 //also appears that line-break between <html> adn <body> is critical for iOS mail to show content.
 //also need NO <head> section, else it fails... what a palaver
+//%0D%0A is line break
 $mailcontent = 
 $boundary.'
 Content-Type: text/plain; charset=3D"UTF-8"
@@ -330,7 +332,7 @@ Content-Transfer-Encoding: quoted-printable
 
 <body>'.$content_qp.'<hr /><p>This message was sent via the Samba Gal&ecirc;z website by <strong>'.$user_name.'</strong></p>
 <p>To reply directly, please do not use your normal reply as IT WILL NOT WORK, <a href=3D"mailto:'.$user_email.'?subject=3DRe:'.$subject.'&body=3D
-%0D%0A %0D%0A'.$user_name.' said: %0D%0A'.$textcontent.'">try this link</a> instead.</p>
+%0D%0A %0D%0AOn '.$time_string.', '.$user_name.' <'.$user_email.'> said: %0D%0A'.$textcontent.'">try this link</a> instead.</p>
 <p> To message all recipients in '.$sg_groupname.', please use the form on the <a href=3D"'.$group_url.'">group page</a>.</p>
 <hr />
 </body>
