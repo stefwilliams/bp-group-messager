@@ -205,7 +205,13 @@ if (isset($attachments)) {
     	mkdir($end_path, 0777, true);
 	foreach ($attachments as $attachment) {	
 
-		$attachment = sanitize_file_name($attachment);
+		$sanitized_attachment = sanitize_file_name($attachment);
+		$attachment_parts = pathinfo($sanitized_attachment);
+		$lowcase_extension = strtolower($attachment_parts['extension']);
+		$attachment = $attachment_parts['filename'].'.'.$lowcase_extension;
+
+		error_log(var_export($attachment_parts, true));
+		// wp_handle_upload( $file, $overrides, $time );
 
 		rename($temp_path.'/'.$attachment, $end_path.'/'.$attachment);
 
@@ -288,7 +294,7 @@ foreach ($sg_all_group_members as $member) {
 
 $boundary = "--00multipartboundary00";
 //insert header for HTML emails
-add_filter('wp_mail_content_type',function($content_type, $boundary){
+add_filter('wp_mail_content_type',function($content_type){
 	return 'multipart/alternative;
 	boundary="00multipartboundary00"';
 });
@@ -302,12 +308,32 @@ $to_field = $sg_groupname." <".$group_array -> slug."@sambagalez.info>";
 	$user_email = $user_object->user_email;
 	$user_name = $user_object->display_name;
 
-$textcontent = wp_strip_all_tags( $content, false);
+
+//define EOL tags in $content
+$newlineTags = array(
+  '<br>',
+  '<br/>',
+  '<br />',
+  '</p>',
+);
+
+//remove tags and replace with '\n' or reply-to EOL character
+$newline_content = str_replace($newlineTags, PHP_EOL, $content);
+// $newline_replyto = str_replace($newlineTags, '%0D%0A ', $content);
+
+//strip all other tags
+$newline_textcontent = wp_strip_all_tags( $newline_content, false);
+// $newline_textreplyto = wp_strip_all_tags( $newline_replyto, false);
+
+//encode as quoted printable
+$textcontent = quoted_printable_encode($newline_textcontent);
+$url_textreplyto = rawurlencode( $newline_textcontent );
+$textreplyto = quoted_printable_encode($url_textreplyto);
 
 // create mail headers
 // $mail_headers[] = 'From:'.$user_name.'<noreply@sambagalez.info>'."\r\n";
 // $mail_headers[] = 'Reply-to:'.$user_name.'<'.$user_email.'>'."\r\n";
-$mail_headers[] = 'Cc:'.implode( ",", $sg_all_group_emails );
+$mail_headers[] = 'Bcc:'.implode( ",", $sg_all_group_emails );
 
 
 //wysiwyg content converted to 8bit then qp (just qp did not work for some reason)
@@ -321,22 +347,41 @@ $time_string = date('D, M j, Y \a\t g:i A');
 //%0D%0A is line break
 $mailcontent = 
 $boundary.'
-Content-Type: text/plain; charset=3D"UTF-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 '.$textcontent.'
-'.$boundary.'
-Content-type: text/html; charset=3D"UTF-8"
-Content-Transfer-Encoding: quoted-printable
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns=3D"http://www.w3.org/1999/xhtml">
 
-<body>'.$content_qp.'<hr /><p>This message was sent via the Samba Gal&ecirc;z website by <strong>'.$user_name.'</strong></p>
-<p>To reply directly, please do not use your normal reply as IT WILL NOT WORK, <a href=3D"mailto:'.$user_email.'?subject=3DRe:'.$subject.'&body=3D
-%0D%0A %0D%0AOn '.$time_string.', '.$user_name.' <'.$user_email.'> said: %0D%0A'.$textcontent.'">try this link</a> instead.</p>
-<p> To message all recipients in '.$sg_groupname.', please use the form on the <a href=3D"'.$group_url.'">group page</a>.</p>
-<hr />
-</body>
-</html>';
+'.$boundary.'
+Content-type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" =
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html =
+xmlns=3D"http://www.w3.org/1999/xhtml"> =
+<head> =
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DUTF-8" =
+/> =
+</head> =
+<body> = 
+'
+.$content_qp.' =
+<hr /><p>This message was sent via the Samba Gal&ecirc;z website by =
+<strong>'.$user_name.'</strong></p> =
+<p>To reply directly, please do not use your normal reply as IT WILL NOT WORK, =
+<a href=3D"mailto: =
+'.$user_email.'?subject=3DRe:'.$subject.'&body=3D =
+%0D%0A %0D%0AOn =
+'.$time_string.', =
+'.$user_name.' =
+<'.$user_email.'> said: %0D%0A =
+'.$textreplyto.' =
+">try this link</a> instead.</p> =
+<p> To message all recipients in '.$sg_groupname.', =
+please use the form on the <a href=3D"'.$group_url.'">group page</a>.</p> =
+<hr /> =
+</body> =
+</html> =
+'.$boundary.'--';
 // $mailcontent_8bit = utf8_encode($mailcontent);
 // $mailcontent_qp = quoted_printable_encode($mailcontent);
 // $mailcontent_type = mb_detect_encoding($content);
