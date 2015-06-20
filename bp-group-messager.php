@@ -132,6 +132,10 @@ function add_groupemail_sidebar()
 add_action( 'get_sidebar', 'add_groupemail_sidebar' );
 
 function add_groupemailscripts(){
+		global $bp;
+	$sg_is_groups = $bp -> current_component;
+	$sg_is_single = $bp -> is_single_item;
+		if (($sg_is_groups == 'groups') && ($sg_is_single == '1')) {
 	$pluginsurl = plugins_url ('bp-group-messager');
     wp_enqueue_script( 'groupemail', $pluginsurl.'/js/groupemail.js', array( 'jquery' ) );
     wp_localize_script( 'groupemail', 'ajax_object',
@@ -147,8 +151,9 @@ function add_groupemailscripts(){
     wp_enqueue_script( 'jquery_attachment', $pluginsurl.'/js/attachment.js', array( 'jquery' ), '0.1', true );
         wp_localize_script( 'jquery_attachment', 'ajax_upload',
             array( 'ajax_url' => admin_url( 'admin-ajax.php' )) );
+    }
 }
-add_action( 'init', 'add_groupemailscripts' );
+add_action( 'wp_print_scripts', 'add_groupemailscripts' );
 
 
 
